@@ -9,16 +9,25 @@ import {
   createGallery,
   clearGallery,
   hideLoader,
-  simpleLightBox,
+  showLoadMoreButton,
+  hideLoadMoreButton,
+  appendGallery,
+  getCardHeight,
 } from './js/render-functions';
 
-// getImagesByQuery('cat').then(console.log);
-
 const formEl = document.querySelector('.form');
+const loadMoreBtn = document.querySelector('.load-more-btn');
+const perPage = 15;
 
-formEl.addEventListener('submit', e => {
+let page = 1;
+let query = '';
+let totalPages = null;
+let cardHeight = null;
+
+formEl.addEventListener('submit', async e => {
   e.preventDefault();
-  const query = e.currentTarget.elements['search-text'].value.trim();
+  page = 1;
+  query = e.currentTarget.elements['search-text'].value.trim();
   if (query.length === 0) {
     iziToast.warning({
       message: 'Please enter data',
@@ -27,12 +36,50 @@ formEl.addEventListener('submit', e => {
   } else {
     clearGallery();
     showLoader();
-    getImagesByQuery(query)
-      .then(({ hits, total, totalHits }) => {
-        createGallery(hits);
-      })
-      .finally(() => {
-        hideLoader();
-      });
+    try {
+      const response = await getImagesByQuery(query, page);
+      const { hits, total, totalHits } = response;
+      totalPages = Math.ceil(totalHits / perPage);
+      createGallery(hits);
+      cardHeight = getCardHeight();
+      if (page < totalPages) {
+        showLoadMoreButton();
+        loadMoreBtn.addEventListener('click', onLoadMoreBtnClick);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      hideLoader();
+    }
   }
 });
+
+const onLoadMoreBtnClick = async e => {
+  e.target.blur();
+  page += 1;
+  try {
+    hideLoadMoreButton();
+    showLoader();
+    const response = await getImagesByQuery(query, page);
+    const { hits, total, totalHits } = response;
+    appendGallery(hits);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    hideLoader();
+    scrollBy({
+      top: cardHeight * 2,
+      behavior: 'smooth',
+    });
+    if (page < totalPages) {
+      showLoadMoreButton();
+    }
+    if (page === totalPages) {
+      iziToast.info({
+        message: "We're sorry, but you've reached the end of search results.",
+        position: 'topRight',
+      });
+      loadMoreBtn.removeEventListener('click', onLoadMoreBtnClick);
+    }
+  }
+};

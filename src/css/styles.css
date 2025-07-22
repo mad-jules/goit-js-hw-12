@@ -37,7 +37,7 @@ body {
   height: 10px;
   border-radius: 50%;
   display: block;
-  margin: 15px auto;
+  margin: 34px auto 14px auto;
   position: relative;
   color: rgb(74, 144, 226);
   left: -100px;
@@ -111,18 +111,6 @@ body {
   }
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 /* Form styles */
 .form {
   display: flex;
@@ -145,7 +133,8 @@ body {
   outline: none;
 }
 
-.form button {
+.form button,
+.load-more-btn {
   padding: 10px 20px;
   font-size: 16px;
   background-color: #4a90e2;
@@ -156,7 +145,13 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.form button:hover {
+.load-more-btn {
+  display: block;
+  margin: 20px auto 0 auto;
+}
+
+.form button:hover,
+.load-more-btn:hover {
   background-color: #357ab8;
 }
 
@@ -207,4 +202,16 @@ body {
   height: 172px;
   object-fit: cover;
   display: block;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

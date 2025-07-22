@@ -3,14 +3,15 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const imgList = document.querySelector('.gallery');
 const loader = document.querySelector('.loader');
+const loadMoreBtn = document.querySelector('.load-more-btn');
 
 const simpleLightBox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
 
-const createGallery = images => {
-  const markup = images
+const generateMarkup = images => {
+  return images
     .map(
       ({
         webformatURL,
@@ -53,8 +54,17 @@ const createGallery = images => {
   `
     )
     .join('');
+};
 
+const createGallery = images => {
+  const markup = generateMarkup(images);
   imgList.innerHTML = markup;
+  simpleLightBox.refresh();
+};
+
+const appendGallery = images => {
+  const markup = generateMarkup(images);
+  imgList.insertAdjacentHTML('beforeend', markup);
   simpleLightBox.refresh();
 };
 
@@ -78,4 +88,37 @@ const hideLoader = () => {
   }
 };
 
-export { createGallery, clearGallery, showLoader, hideLoader, simpleLightBox };
+const isLoadMoreVisible = () => {
+  return !loadMoreBtn.classList.contains('visually-hidden');
+};
+
+const showLoadMoreButton = () => {
+  if (!isLoadMoreVisible()) {
+    loadMoreBtn.classList.remove('visually-hidden');
+  }
+};
+const hideLoadMoreButton = () => {
+  if (isLoadMoreVisible) {
+    loadMoreBtn.classList.add('visually-hidden');
+  }
+};
+
+const getCardHeight = () => {
+  const card = imgList.querySelector('.gallery-item');
+  if (card === null) {
+    return 0;
+  }
+  return card.getBoundingClientRect().height;
+};
+
+export {
+  createGallery,
+  clearGallery,
+  showLoader,
+  hideLoader,
+  showLoadMoreButton,
+  hideLoadMoreButton,
+  appendGallery,
+  getCardHeight,
+  simpleLightBox,
+};
